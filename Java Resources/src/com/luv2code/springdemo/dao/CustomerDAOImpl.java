@@ -20,20 +20,44 @@ public class CustomerDAOImpl implements CustomerDAO{
 	private SessionFactory sessionFactory;
 	
 	@Override
-	@Transactional
-	public List<Customer> getCostumers() {
+	public List<Customer> getCustomers() {
 		
 		// obtenemos la session actual de hibernate
 		Session currentSession = sessionFactory.getCurrentSession();
 		
 		// create a query
-		Query<Customer> theQuery = currentSession.createQuery("from Customer", Customer.class);
+		Query<Customer> theQuery = currentSession.createQuery("from Customer order by lastName", Customer.class);
 	
 		// execute a query and get a result
 		List<Customer> customers = theQuery.getResultList();
 		
 		// return the results
 		return customers;
+	}
+
+	@Override
+	public void saveCustomer(Customer theCustomer) {
+		Session currentSession = sessionFactory.getCurrentSession();
+		
+		// guardamos al customer
+		currentSession.saveOrUpdate(theCustomer);
+		
+	}
+
+	@Override
+	public Customer getCustomer(int customerId) {
+		Session currentSession = sessionFactory.getCurrentSession();
+
+		return currentSession.get(Customer.class, customerId);
+	}
+
+	@Override
+	public void deleteCustomer(int customerId) {
+		Session currentSession = sessionFactory.getCurrentSession();
+		Query theQuery =
+				currentSession.createQuery("delete from Customer where id=:customerId");
+		theQuery.setParameter("customerId", customerId);
+		theQuery.executeUpdate();
 	}
 
 }
